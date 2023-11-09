@@ -72,20 +72,20 @@ android {
         dev {
             dimension "fluttter_flavor_demo"
             applicationIdSuffix ".dev"
-            resValue "string", "app_name", "base dev"
+            resValue "string", "app_name", "flavors dev"
             versionNameSuffix ".dev"
             flutter.target "lib/flavors/main_dev.dart"
         }
         uat {
             dimension "fluttter_flavor_demo"
             applicationIdSuffix ".uat"
-            resValue "string", "app_name", "base uat"
+            resValue "string", "app_name", "flavors uat"
             versionNameSuffix ".uat"
             flutter.target "lib/flavors/main_uat.dart"
         }
         prod {
             dimension "fluttter_flavor_demo"
-            resValue "string", "app_name", "base Prod"
+            resValue "string", "app_name", "flavors prod"
             versionNameSuffix ".prod"
             flutter.target "lib/flavors/main_prod.dart"
         }
