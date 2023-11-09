@@ -1,0 +1,74 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "dev-debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_dev.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor", 
+                "dev",
+            ]
+        },
+        {
+            "name": "dev-release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_dev.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor", 
+                "dev",
+            ]
+        },
+        {
+            "name": "uat-debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_uat.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor", 
+                "uat",
+            ]
+        },
+        {
+            "name": "uat-release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_uat.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor", 
+                "uat",
+            ]
+        },
+        {
+            "name": "prod-debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_prod.dart",
+            "flutterMode": "debug",
+            "args": [
+                "--flavor", 
+                "prod",
+            ]
+        },
+        {
+            "name": "prod-release",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/flavors/main_prod.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor", 
+                "prod",
+            ]
+        },
+    ]
+}
