@@ -21,13 +21,24 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+//def keystoreProperties = new Properties()
+//def keystorePropertiesFile = rootProject.file('key.properties')
+//if (keystorePropertiesFile.exists()) {
+//    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//}
+
+def signingStoreFile = 'upload-keystore.jks'
+def signingStorePassword = '123456'
+def signingKeyAlias = 'upload'
+def signingKeyPassword = '123456'
+
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -49,47 +60,69 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        debug {
+            storeFile file(signingStoreFile)
+            storePassword signingStorePassword
+            keyAlias signingKeyAlias
+            keyPassword signingKeyPassword
+        }
+        release {
+            storeFile file(signingStoreFile)
+            storePassword signingStorePassword
+            keyAlias signingKeyAlias
+            keyPassword signingKeyPassword
+        }
+    }
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
-
         debug {
             minifyEnabled false
             debuggable true
             signingConfig signingConfigs.debug
         }
     }
+
+
     flavorDimensions = ["fluttter_flavor_demo"]
     productFlavors {
         dev {
+            applicationId "com.ahvuit.demo_flavors.dev"
             dimension "fluttter_flavor_demo"
             applicationIdSuffix ".dev"
             resValue "string", "app_name", "flavors dev"
             versionNameSuffix ".dev"
             flutter.target "lib/flavors/main_dev.dart"
+            setProperty("archivesBaseName", "flavors-dev-" + defaultConfig.versionName)
         }
         uat {
+            applicationId "com.ahvuit.demo_flavors.uat"
             dimension "fluttter_flavor_demo"
             applicationIdSuffix ".uat"
             resValue "string", "app_name", "flavors uat"
             versionNameSuffix ".uat"
             flutter.target "lib/flavors/main_uat.dart"
+            setProperty("archivesBaseName", "flavors-dev-" + defaultConfig.versionName)
         }
         prod {
+            applicationId "com.ahvuit.demo_flavors"
             dimension "fluttter_flavor_demo"
             resValue "string", "app_name", "flavors prod"
             versionNameSuffix ".prod"
             flutter.target "lib/flavors/main_prod.dart"
+            setProperty("archivesBaseName", "flavors-prod-" + defaultConfig.versionName)
         }
     }
+
 }
 
 flutter {
