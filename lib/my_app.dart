@@ -34,41 +34,52 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final platform = const MethodChannel('channel');
+  final eventChannel = const EventChannel('channel');
   late Isolate sumNumberIsolate;
-  String messageFromNative = "Waiting for message...";
-  String _batteryLevel = 'Unknown battery level.';
+  String messageStringFromNative = "Waiting for message...";
+  String messageUserFromNative = "Waiting for message userName...";
+  //String messageTime = "Waiting for message time...";
 
   @override
   void initState() {
+    // eventChannel.receiveBroadcastStream().listen((data) {
+    //   setState(() {
+    //     messageTime = data;
+    //   });
+    // });
     super.initState();
-    _getMessageFromNative();
-    _getBatteryLevel();
   }
 
-  Future<void> _getBatteryLevel() async {
-    String batteryLevel;
-    try {
-      final result = await platform.invokeMethod<int>('getBatteryLevel');
-      batteryLevel = 'Battery level at $result % .';
-    } on PlatformException catch (e) {
-      batteryLevel = "Failed to get battery level: '${e.message}'.";
-    }
-
-    setState(() {
-      _batteryLevel = batteryLevel;
-    });
-  }
-
-  Future<void> _getMessageFromNative() async {
+  Future<void> _getStringFromNative() async {
     String message;
     try {
-      message = await platform.invokeMethod('getMessageFromNative');
+      message = await platform.invokeMethod('getStringFromNative');
     } on PlatformException catch (e) {
       message = "Failed to get message from native: ${e.message}";
     }
 
     setState(() {
-      messageFromNative = message;
+      messageStringFromNative = message;
+    });
+  }
+
+  Future<void> _getUserFromNative() async {
+    String message;
+    try {
+      message = await platform.invokeMethod('getUserFromNative');
+      log('message: $message');
+
+      Map<String, dynamic> jsonMap = json.decode(message);
+      log('jsonMap: $jsonMap');
+
+      User user = User.fromJson(jsonMap);
+      message = user.userName ?? '';
+      log('user ${user.userName}');
+    } on PlatformException catch (e) {
+      message = "Failed to get message user from native: ${e.message}";
+    }
+    setState(() {
+      messageUserFromNative = message;
     });
   }
 
@@ -76,9 +87,16 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       User user = User(id: '1', email: 'anhvu@gmail.com', userName: 'anh vu');
       String json = jsonEncode(user);
-      await platform.invokeMethod('sendMessageToNative', {'message': json});
+
+      platform.invokeMethod('sendMessageToNative', {'message': json});
+
+      // message = await platform.invokeMethod('getUserFromNative');
+      //
+      // setState(() {
+      //   messageUserFromNative = message;
+      // });
     } on PlatformException catch (e) {
-      print("Failed to send message to native: ${e.message}");
+      log("Failed to send message to native: ${e.message}");
     }
   }
 
@@ -93,12 +111,20 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              messageFromNative,
+              messageStringFromNative,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             Text(
-              _batteryLevel,
+              messageUserFromNative,
               style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            ElevatedButton(
+              onPressed: () => _getStringFromNative(),
+              child: const Text('Get String form native'),
+            ),
+            ElevatedButton(
+              onPressed: () => _getUserFromNative(),
+              child: const Text('Get User form native'),
             ),
             ElevatedButton(
               onPressed: () =>
