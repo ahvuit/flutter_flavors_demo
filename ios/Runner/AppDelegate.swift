@@ -8,11 +8,14 @@ import Flutter
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
 
+    let CHANNEL = "channel"
+    let EVENT_CHANNEL = "eventChannel"
     let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
-
     let channel = FlutterMethodChannel(
-        name: "channel",
+        name: CHANNEL,
         binaryMessenger: controller.binaryMessenger)
+    let eventChannel = FlutterEventChannel(name: EVENT_CHANNEL, binaryMessenger: controller.binaryMessenger)
+    eventChannel.setStreamHandler(TimeHandler())
 
     channel.setMethodCallHandler({
           (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
@@ -34,4 +37,23 @@ import Flutter
   private func getStringFromNative(result: FlutterResult) {
     result("Hello from ios to Flutter!")
   }
+
+   class TimeHandler: NSObject, FlutterStreamHandler {
+          var timer = Timer()
+
+          func onListen(withArguments arguments: Any?,eventSink: @escaping FlutterEventSink) -> FlutterError? {
+              self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { timer in
+                  let dateFormat = DateFormatter()
+                  dateFormat.dateFormat = "HH:mm:ss"
+                  let time = dateFormat.string(from: Date())
+                  print(time)
+                  eventSink(time)
+              })
+              return nil
+          }
+
+          func onCancel(withArguments arguments: Any?) -> FlutterError? {
+              return nil
+          }
+      }
 }

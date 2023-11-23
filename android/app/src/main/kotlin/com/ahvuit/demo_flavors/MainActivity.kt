@@ -1,5 +1,7 @@
 package com.ahvuit.demo_flavors
 
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.annotation.NonNull
 import com.ahvuit.demo_flavors.models.User
@@ -12,11 +14,11 @@ import io.flutter.plugins.GeneratedPluginRegistrant
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.logging.StreamHandler
 
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "channel"
+    private val EVENT_CHANNEL = "eventChannel"
 
     private fun getStringFromNative(): String = "Hello from android to Flutter!"
 
@@ -35,21 +37,26 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)
 
-//        EventChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setStreamHandler(
-//            object : EventChannel.StreamHandler {
-//                private var eventSink: EventChannel.EventSink? = null
-//
-//                override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
-//                    eventSink = events
-//                    val currentTime: String = getCurrentTime()
-//                    eventSink?.success(currentTime)
-//                }
-//
-//                override fun onCancel(arguments: Any?) {
-//                    eventSink = null
-//                }
-//            }
-//        )
+
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, EVENT_CHANNEL).setStreamHandler(
+            object : EventChannel.StreamHandler{
+
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post(object : Runnable {
+                        override fun run() {
+                            val currentTime = getCurrentTime()
+                            events?.success(currentTime)
+                            handler.postDelayed(this, 1000)
+                        }
+                    })
+                }
+
+                override fun onCancel(arguments: Any?) {
+                }
+
+            }
+        )
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
             // This method is invoked on the main thread.
